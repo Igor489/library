@@ -2,6 +2,7 @@
   "dependencies": {
     "axios": "^0.25.0",
     "create-react-app": "^5.0.0",
-    "react-router-dom": "^6.2.1"
+    "react-router-dom": "^6.2.1",
+    "universal-cookie": "^4.0.4"
   }
 }
