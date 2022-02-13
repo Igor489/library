@@ -71,12 +71,25 @@ class TestBookViewSet(APITestCase):
         response = self.client.get('/api/books/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_edit_admin(self):
-        author = Author.objects.create(name='Пушкин', birthday_year=1799)
-        book = Book.objects.create(name='Пиковая дама', author=author)
+    def test_edit_mixer(self):
+        book = mixer.blend(Book)
         admin = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123456')
         self.client.login(username='admin', password='admin123456')
         response = self.client.put(f'/api/books/{book.id}/', {'name': 'Руслан и Людмила', 'author': book.author.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         book = Book.objects.get(id=book.id)
-        self.assertEqual(book.name, 'Руслан и Людмила')
+        self.assertEqual(book.name,'Руслан и Людмила')
+
+    def test_get_detail(self):
+        book = mixer.blend(Book, name='Алые паруса')
+        response = self.client.get(f'/api/books/{book.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_book = json.loads(response.content)
+        self.assertEqual(response_book['name'], 'Алые паруса')
+
+    def test_get_detail_author(self):
+        book = mixer.blend(Book, author__name='Грин')
+        response = self.client.get(f'/api/books/{book.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_book = json.loads(response.content)
+        self.assertEqual(response_book['author']['name'], 'Грин')
